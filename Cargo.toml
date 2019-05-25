@@ -1,0 +1,20 @@
+[package]
+name = "embedded-ffi"
+description = "OsStr and OsString for embedded usage"
+repository = "https://github.com/lights0123/embedded-ffi"
+license = "MIT OR Apache-2.0"
+version = "0.1.0"
+authors = ["lights0123 <developer@lights0123.com>"]
+edition = "2018"
+categories = ["no_std", "embedded"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cstr_core = "0.1.2"
+
+[features]
+alloc = ["cstr_core/alloc"]
+
+[package.metadata.docs.rs]
+all-features = true
