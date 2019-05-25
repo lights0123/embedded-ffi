@@ -3,11 +3,11 @@ name = "embedded-ffi"
 description = "OsStr and OsString for embedded usage"
 repository = "https://github.com/lights0123/embedded-ffi"
 license = "MIT OR Apache-2.0"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["lights0123 <developer@lights0123.com>"]
 edition = "2018"
 keywords = ["ffi", "osstr", "osstring", "cstr", "cstring"]
-categories = ["no_std", "embedded", "os::unix-apis", "development-tools::ffi"]
+categories = ["no-std", "embedded", "os::unix-apis", "development-tools::ffi"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
