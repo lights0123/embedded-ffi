@@ -1,6 +1,5 @@
 //! The underlying OsString/OsStr implementation on Unix and many other
 //! systems: just a `Vec<u8>`/`[u8]`.
-use crate::lossy::Utf8Lossy;
 #[cfg(feature = "alloc")]
 use alloc::borrow::Cow;
 #[cfg(feature = "alloc")]
@@ -10,14 +9,16 @@ use alloc::rc::Rc;
 #[cfg(feature = "alloc")]
 use alloc::string::String;
 #[cfg(feature = "alloc")]
+use core::mem;
+#[cfg(feature = "alloc")]
 use alloc::sync::Arc;
 use core::fmt;
-use core::mem;
 use core::str;
 
+use crate::lossy::Utf8Lossy;
 use crate::os_str::OsStr;
-use crate::sys_common::bytestring::debug_fmt_bytestring;
 use crate::sys_common::AsInner;
+use crate::sys_common::bytestring::debug_fmt_bytestring;
 
 pub(crate) struct Slice {
 	pub inner: [u8],
@@ -45,10 +46,10 @@ pub mod inner_alloc {
 	use core::fmt;
 	use core::mem;
 
+	use crate::os_str::OsString;
 	use crate::sys_common::{AsInner, FromInner, IntoInner};
 
 	use super::Slice;
-	use crate::os_str::OsString;
 
 	#[derive(Clone, Hash)]
 	pub(crate) struct Buf {
@@ -118,13 +119,13 @@ pub mod inner_alloc {
 			self.inner.shrink_to_fit()
 		}
 
-		//		#[inline]
-		//		pub fn shrink_to(&mut self, min_capacity: usize) {
-		//			self.inner.shrink_to(min_capacity)
-		//		}
+//		#[inline]
+//		pub fn shrink_to(&mut self, min_capacity: usize) {
+//			self.inner.shrink_to(min_capacity)
+//		}
 
 		pub fn as_slice(&self) -> &Slice {
-			unsafe { mem::transmute(&*self.inner) }
+			unsafe { &*(&*self.inner as *const [u8] as *const _) }
 		}
 
 		pub fn into_string(self) -> Result<String, Buf> {
@@ -192,7 +193,7 @@ pub mod inner_alloc {
 
 impl Slice {
 	fn from_u8_slice(s: &[u8]) -> &Slice {
-		unsafe { mem::transmute(s) }
+		unsafe { &*(s as *const [u8] as *const _) }
 	}
 
 	pub fn from_str(s: &str) -> &Slice {
@@ -265,7 +266,7 @@ pub trait OsStrExt {
 impl OsStrExt for OsStr {
 	#[inline]
 	fn from_bytes(slice: &[u8]) -> &OsStr {
-		unsafe { mem::transmute(slice) }
+		unsafe { &*(slice as *const [u8] as *const _) }
 	}
 	#[inline]
 	fn as_bytes(&self) -> &[u8] {

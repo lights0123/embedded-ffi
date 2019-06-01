@@ -1,6 +1,5 @@
 use core::char;
 use core::fmt::{self, Write};
-use core::mem;
 use core::str as core_str;
 
 /// Lossy UTF-8 string.
@@ -10,7 +9,7 @@ pub struct Utf8Lossy {
 
 impl Utf8Lossy {
 	pub fn from_bytes(bytes: &[u8]) -> &Utf8Lossy {
-		unsafe { mem::transmute(bytes) }
+		unsafe { &*(bytes as *const [u8] as *const _) }
 	}
 
 	pub fn chunks(&self) -> Utf8LossyChunksIter<'_> {
@@ -40,7 +39,7 @@ impl<'a> Iterator for Utf8LossyChunksIter<'a> {
 	type Item = Utf8LossyChunk<'a>;
 
 	fn next(&mut self) -> Option<Utf8LossyChunk<'a>> {
-		if self.source.len() == 0 {
+		if self.source.is_empty() {
 			return None;
 		}
 
@@ -136,7 +135,7 @@ impl fmt::Display for Utf8Lossy {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		// If we're the empty string then our iterator won't actually yield
 		// anything, so perform the formatting manually
-		if self.bytes.len() == 0 {
+		if self.bytes.is_empty() {
 			return "".fmt(f);
 		}
 

@@ -400,7 +400,7 @@ impl fmt::Debug for OsString {
 #[cfg(feature = "alloc")]
 impl PartialEq for OsString {
 	fn eq(&self, other: &OsString) -> bool {
-		&**self == &**other
+		self == other
 	}
 }
 
@@ -443,19 +443,19 @@ impl PartialOrd for OsString {
 	}
 	#[inline]
 	fn lt(&self, other: &OsString) -> bool {
-		&**self < &**other
+		self < other
 	}
 	#[inline]
 	fn le(&self, other: &OsString) -> bool {
-		&**self <= &**other
+		self <= other
 	}
 	#[inline]
 	fn gt(&self, other: &OsString) -> bool {
-		&**self > &**other
+		self > other
 	}
 	#[inline]
 	fn ge(&self, other: &OsString) -> bool {
-		&**self >= &**other
+		self >= other
 	}
 }
 
@@ -648,6 +648,10 @@ impl OsStr {
 	/// revealing the internal, platform-specific encodings.
 	fn bytes(&self) -> &[u8] {
 		unsafe { &*(&self.inner as *const _ as *const [u8]) }
+	}
+
+	pub fn display(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+		fmt::Display::fmt(&self.inner, formatter)
 	}
 }
 
